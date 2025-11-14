@@ -14,6 +14,7 @@ import type { Bill } from "@/convex/schema";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { formatCurrencyUSD } from "@/lib/currency";
 
 interface ProfileDashboardProps {
   profileId: Id<"profiles">;
@@ -183,7 +184,7 @@ export function ProfileDashboard({ profileId, bills }: ProfileDashboardProps) {
                     This Month
                   </span>
                   <span className="font-semibold">
-                    €{currentMonthTotal.toFixed(2)}
+                    {formatCurrencyUSD(currentMonthTotal)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -191,7 +192,7 @@ export function ProfileDashboard({ profileId, bills }: ProfileDashboardProps) {
                     Last Month
                   </span>
                   <span className="font-semibold">
-                    €{lastMonthTotal.toFixed(2)}
+                    {formatCurrencyUSD(lastMonthTotal)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -275,7 +276,7 @@ export function ProfileDashboard({ profileId, bills }: ProfileDashboardProps) {
                     </div>
                   </div>
                   <span className="font-semibold">
-                    €{item.avgAmount.toFixed(2)}
+                    {formatCurrencyUSD(item.avgAmount)}
                   </span>
                 </div>
               ))}
@@ -313,8 +314,8 @@ export function ProfileDashboard({ profileId, bills }: ProfileDashboardProps) {
                       <div>
                         <span className="font-medium">{instance.billName}</span>
                         <p className="text-sm text-muted-foreground">
-                          Due {format(instance.dueDate, "MMM dd")} • €
-                          {instance.amount.toFixed(2)}
+                          Due {format(instance.dueDate, "MMM dd")} • 
+                          {formatCurrencyUSD(instance.amount)}
                         </p>
                       </div>
                       <Badge

@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Check, Calendar, Euro } from "lucide-react";
+import { Check, Calendar, DollarSign } from "lucide-react";
 import type { BillInstance } from "@/convex/schema";
 import { toast } from "sonner";
 import { useMutation } from "convex/react";
@@ -165,9 +165,9 @@ export function QuickEditInstanceDialog({
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount (€)</Label>
+              <Label htmlFor="amount">Amount ($)</Label>
               <div className="relative">
-                <Euro className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="amount"
                   type="number"

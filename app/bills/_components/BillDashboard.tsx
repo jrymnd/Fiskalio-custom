@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { BillInstance } from "@/convex/schema";
+import { formatCurrencyUSD } from "@/lib/currency";
 
 interface BillDashboardProps {
   instances: BillInstance[];
@@ -43,7 +44,7 @@ export function BillDashboard({ instances }: BillDashboardProps) {
       icon: CheckCircle,
       color: "text-green-600",
       bgColor: "bg-green-50",
-      subtitle: `€${paidAmount.toFixed(2)}`,
+      subtitle: formatCurrencyUSD(paidAmount),
     },
     {
       title: "Pending",
@@ -51,7 +52,7 @@ export function BillDashboard({ instances }: BillDashboardProps) {
       icon: Clock,
       color: "text-amber-600",
       bgColor: "bg-amber-50",
-      subtitle: `€${unpaidAmount.toFixed(2)}`,
+      subtitle: formatCurrencyUSD(unpaidAmount),
     },
     {
       title: "Overdue",
@@ -111,16 +112,16 @@ export function BillDashboard({ instances }: BillDashboardProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Total Amount</p>
-              <p className="text-2xl font-bold">€{totalAmount.toFixed(2)}</p>
+              <p className="text-2xl font-bold">{formatCurrencyUSD(totalAmount)}</p>
             </div>
             <div className="flex space-x-4">
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">Paid</p>
-                <p className="font-semibold text-green-600">€{paidAmount.toFixed(2)}</p>
+                <p className="font-semibold text-green-600">{formatCurrencyUSD(paidAmount)}</p>
               </div>
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">Outstanding</p>
-                <p className="font-semibold text-red-600">€{unpaidAmount.toFixed(2)}</p>
+                <p className="font-semibold text-red-600">{formatCurrencyUSD(unpaidAmount)}</p>
               </div>
             </div>
           </div>
@@ -136,7 +137,7 @@ export function BillDashboard({ instances }: BillDashboardProps) {
           <CardContent>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold">€{currentMonthInstance.amount.toFixed(2)}</p>
+                <p className="font-semibold">{formatCurrencyUSD(currentMonthInstance.amount)}</p>
                 <p className="text-sm text-muted-foreground">
                   Due: {format(currentMonthInstance.dueDate, "MMM dd, yyyy")}
                 </p>

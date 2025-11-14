@@ -19,6 +19,7 @@ import { api } from "@/convex/_generated/api";
 import type { BillInstance } from "@/convex/schema";
 import { EditBillInstanceDialog } from "./EditBillInstanceDialog";
 import DeleteBillInstanceAlertDialog from "./DeleteBillInstanceAlertDialog";
+import { formatCurrencyUSD } from "@/lib/currency";
 
 interface BillInstanceCardProps {
   billInstance: BillInstance;
@@ -31,6 +32,25 @@ export function BillInstanceCard({ billInstance }: BillInstanceCardProps) {
   );
 
   const isOverdue = new Date(billInstance.dueDate) < new Date();
+  // Safely turn a string into a Date, or return null
+  const safeParseDate = (value: string | undefined | null) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return isNaN(date.getTime()) ? null : date;
+  };
+
+  const formattedDueDate = (() => {
+    const d = safeParseDate(billInstance.dueDate as unknown as string);
+    if (!d) return "No due date";
+    return format(d, "PPP");
+  })();
+
+  const formattedMonth = (() => {
+    const d = safeParseDate(billInstance.month as unknown as string);
+    if (!d) return "Unknown month";
+    return format(d, "MMMM yyyy");
+  })();
+
 
   const handleTogglePaidStatus = async () => {
     setLoading(true);
@@ -107,7 +127,7 @@ export function BillInstanceCard({ billInstance }: BillInstanceCardProps) {
         <div className="flex items-start justify-between">
           <CardTitle className="flex items-center space-x-2 text-lg">
             <NotebookTabs className="h-5 w-5 text-muted-foreground" />
-            <span>€{billInstance.amount.toFixed(2)}</span>
+            <span>{formatCurrencyUSD(billInstance.amount)}</span>
           </CardTitle>
           <Badge className={getBadgeStyles()} variant={"outline"}>
             <div className="flex items-center space-x-1">
@@ -121,12 +141,12 @@ export function BillInstanceCard({ billInstance }: BillInstanceCardProps) {
         <div className="space-y-3">
           <div className="flex items-center space-x-2 text-muted-foreground text-sm">
             <CalendarClock className="h-4 w-4" />
-            <span>Due: {format(billInstance.dueDate, "PPP")}</span>
+            <span>Due: {formattedDueDate}</span>
           </div>
 
           <div className="flex items-center space-x-2 text-muted-foreground text-sm">
             <Calendar className="h-4 w-4" />
-            <span>Month: {format(billInstance.month, "MMMM yyyy")}</span>
+            <span>Month: {formattedMonth}</span>
           </div>
 
           {billInstance.description && (
