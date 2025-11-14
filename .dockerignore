@@ -15,11 +15,6 @@ yarn-error.log*
 pnpm-debug.log*
 *.log
 
-# Env files (we mount them at runtime instead of baking them in)
-.env
-.env.local
-.env.*.local
-
 # OS/editor files
 .DS_Store
 .vscode
