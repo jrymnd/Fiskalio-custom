@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Fiskalio",
+  title: "Fiskalio (Jesse's Build)",
   description:
-    "A comprehensive billing and invoicing solution for personal use.",
+    "Jesse's customized self-hosted billing dashboard.",
 };
 
 export default function RootLayout({
