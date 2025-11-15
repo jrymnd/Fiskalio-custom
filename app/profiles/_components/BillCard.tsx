@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import Link from "next/link";
 import { decryptString } from "@/lib/utils";
+import { RefreshCcw } from "lucide-react"; // ✅ NEW
 
 interface BillCardProps {
   bill: Bill;
@@ -19,14 +20,29 @@ function BillCard({ bill }: BillCardProps) {
             <CardTitle className="text-lg group-hover:text-primary transition-colors">
               {bill.name}
             </CardTitle>
-            <Badge
-              variant="secondary"
-              className="bg-gradient-to-r from-green-500/15 to-green-600/15 dark:from-green-400/25 dark:to-green-500/25 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700"
-            >
-              {bill.billInstanceCount} instances
-            </Badge>
+
+            {/* ✅ Instances badge + Auto pay pill stacked on the right */}
+            <div className="flex flex-col items-end gap-1">
+              <Badge
+                variant="secondary"
+                className="bg-gradient-to-r from-green-500/15 to-green-600/15 dark:from-green-400/25 dark:to-green-500/25 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700"
+              >
+                {bill.billInstanceCount} instances
+              </Badge>
+
+              {bill.autoPayEnabled && (
+                <Badge
+                  variant="outline"
+                  className="inline-flex items-center gap-1 border-emerald-200 bg-emerald-50 text-[10px] font-medium text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                >
+                  <RefreshCcw className="h-3 w-3" />
+                  Auto pay
+                </Badge>
+              )}
+            </div>
           </div>
         </CardHeader>
+
         <CardContent>
           {bill.eBill?.link && (
             <p className="text-sm text-muted-foreground dark:text-slate-400 mb-2 truncate">

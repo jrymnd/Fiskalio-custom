@@ -35,7 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { api } from "@/convex/_generated/api";
 import type { BillInstance } from "@/convex/schema";
 import { cn, formatDateForSaving } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, isValid, parse } from "date-fns";
 
 const billInstanceSchema = z.object({
   month: z.date({ required_error: "Month is required" }),
@@ -59,7 +59,9 @@ export function EditBillInstanceDialog({
   const form = useForm<BillInstanceFormValues>({
     resolver: zodResolver(billInstanceSchema),
     defaultValues: {
-      month: new Date(billInstance.month),
+      month: billInstance.month
+        ? parse(billInstance.month, "MMMM yyyy", new Date())
+        : undefined,
       amount: billInstance.amount,
       // Parse date string as local date to avoid timezone issues
       dueDate: new Date(billInstance.dueDate + "T00:00:00"),
@@ -128,7 +130,7 @@ export function EditBillInstanceDialog({
                           variant="outline"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? (
+                          {field.value && isValid(field.value) ? (
                             format(field.value, "MMMM yyyy")
                           ) : (
                             <span>Select month</span>

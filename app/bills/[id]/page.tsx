@@ -84,12 +84,21 @@ export default function Bill() {
           Back to Profile
         </Button>
         <div className="hidden h-6 w-px bg-border sm:block" />
-        <div className="flex-1">
+        <div className="flex-1 space-y-1">
+        <div className="flex items-center gap-2">
           <h1 className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text font-bold text-3xl text-transparent">
             {bill.name}
           </h1>
-          <p className="mt-1 text-muted-foreground">Bill Details & Instances</p>
         </div>
+
+        <p className="mt-1 text-muted-foreground">Bill Details & Instances</p>
+
+        {bill.autoPayNote && (
+          <p className="text-xs text-muted-foreground">
+            {bill.autoPayNote}
+          </p>
+        )}
+      </div>
         <div className="flex space-x-2">
           <EditBillDialog bill={bill} />
           <DeleteBillAlertDialog bill={bill} />
@@ -149,6 +158,7 @@ export default function Bill() {
                   <BillInstanceCard
                     key={instance._id}
                     billInstance={instance}
+                    autoPayEnabled={bill.autoPayEnabled}   
                   />
                 ))}
             </div>

@@ -27,17 +27,10 @@ import { Input } from "@/components/ui/input";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { encryptString } from "@/lib/utils";
+import { billSchema } from "@/schemas/bill";          // ✅ NEW
+import { Switch } from "@/components/ui/switch";  
 
-const billSchema = z.object({
-  name: z.string().min(1, "Bill name is required"),
-  website: z
-    .string()
-    .url("Please enter a valid URL")
-    .optional()
-    .or(z.literal("")),
-  username: z.string().optional(),
-  password: z.string().optional(),
-});
+
 
 type BillFormValues = z.infer<typeof billSchema>;
 
@@ -57,6 +50,8 @@ function CreateBillDialog({ text, profileId }: CreateBillDialogProps) {
       website: "",
       username: "",
       password: "",
+      autoPayEnabled: false,   // ✅ NEW
+      autoPayNote: "",         // ✅ NEW
     },
   });
 
@@ -75,6 +70,8 @@ function CreateBillDialog({ text, profileId }: CreateBillDialogProps) {
         profileId,
         name: values.name,
         eBill: eBillData,
+        autoPayEnabled: values.autoPayEnabled,             // ✅ NEW
+        autoPayNote: values.autoPayNote || undefined,      // ✅ NEW
       });
 
       if (result.success) {
@@ -194,6 +191,44 @@ function CreateBillDialog({ text, profileId }: CreateBillDialogProps) {
               >
                 {form.formState.isSubmitting ? "Creating..." : "Create Bill"}
               </Button>
+              <FormField
+              control={form.control}
+              name="autoPayEnabled"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between rounded-md border px-3 py-2">
+                  <div>
+                    <FormLabel>Auto pay</FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      Mark this bill as paid automatically (e.g. bank or card autopay).
+                    </p>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="autoPayNote"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Auto pay note (optional)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. Chase checking – 15th each month"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             </DialogFooter>
           </form>
         </Form>

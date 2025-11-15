@@ -26,6 +26,9 @@ const schema = defineSchema({
       }),
     ),
     billInstanceCount: v.number(),
+              // your new fields:
+    autoPayEnabled: v.optional(v.boolean()),
+    autoPayNote: v.optional(v.string()),
     userId: v.string(),
   })
     .index("by_profile", ["profileId"])

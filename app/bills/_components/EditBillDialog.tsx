@@ -4,6 +4,7 @@ import { Edit } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod'; 
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -23,16 +24,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { billSchema } from '@/schemas/bill';
+import { encryptString, decryptString } from '@/lib/utils';
 
-type BillFormValues = {
-  name: string;
-  website?: string;
-  username?: string;
-  password?: string;
-};
+type BillFormValues = z.infer<typeof billSchema>;
 
 interface EditBillDialogProps {
   bill: {
@@ -43,6 +41,8 @@ interface EditBillDialogProps {
       username: string;
       password: string;
     };
+    autoPayEnabled?: boolean;   // ✅ NEW
+    autoPayNote?: string;       // ✅ NEW
   };
   onBillUpdated?: () => void;
 }
@@ -51,15 +51,17 @@ export function EditBillDialog({ bill, onBillUpdated }: EditBillDialogProps) {
   const [open, setOpen] = useState(false);
   const updateBill = useMutation(api.bills.updateBill);
 
-  const form = useForm<BillFormValues>({
-    resolver: zodResolver(billSchema),
-    defaultValues: {
-      name: bill.name,
-      website: bill.eBill?.link || '',
-      username: bill.eBill?.username || '',
-      password: bill.eBill?.password || '',
-    },
-  });
+const form = useForm<BillFormValues>({
+  resolver: zodResolver(billSchema),
+  defaultValues: {
+    name: bill.name,
+    website: bill.eBill?.link || '',
+    username: bill.eBill ? decryptString(bill.eBill.username) : '',
+    password: bill.eBill ? decryptString(bill.eBill.password) : '',
+    autoPayEnabled: bill.autoPayEnabled ?? false,  // ✅ NEW
+    autoPayNote: bill.autoPayNote ?? '',           // ✅ NEW
+  },
+});
 
   const onSubmit = async (values: BillFormValues) => {
     try {
@@ -67,8 +69,8 @@ export function EditBillDialog({ bill, onBillUpdated }: EditBillDialogProps) {
         values.website || values.username || values.password
           ? {
               link: values.website || '',
-              username: values.username || '',
-              password: values.password || '',
+            username: encryptString(values.username || ''),
+            password: encryptString(values.password || ''),
             }
           : undefined;
 
@@ -76,6 +78,8 @@ export function EditBillDialog({ bill, onBillUpdated }: EditBillDialogProps) {
         id: bill._id,
         name: values.name,
         eBill: eBillData,
+        autoPayEnabled: values.autoPayEnabled ?? false,   // ✅ NEW
+        autoPayNote: values.autoPayNote || '',           // ✅ NEW
       });
 
       if (result.success) {
@@ -177,7 +181,46 @@ export function EditBillDialog({ bill, onBillUpdated }: EditBillDialogProps) {
                 )}
               />
             </div>
-
+            <FormField
+              control={form.control}
+              name="autoPayEnabled"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-md border p-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Auto pay</FormLabel>
+                    <p className="text-xs text-muted-foreground">
+                      This bill is automatically paid (e.g. via bank or card).
+                    </p>
+                  </div>
+                  <FormControl>
+                    <input
+                      type="checkbox"
+                      checked={field.value ?? false}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      className="h-4 w-4"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="autoPayNote"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Auto pay note (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="resize-none"
+                      placeholder="e.g. Paid on the 15th with Chase card"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DialogFooter>
               <Button
                 disabled={form.formState.isSubmitting}

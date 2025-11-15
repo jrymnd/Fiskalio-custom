@@ -23,9 +23,10 @@ import { formatCurrencyUSD } from "@/lib/currency";
 
 interface BillInstanceCardProps {
   billInstance: BillInstance;
+  autoPayEnabled?: boolean;
 }
 
-export function BillInstanceCard({ billInstance }: BillInstanceCardProps) {
+export function BillInstanceCard({ billInstance,autoPayEnabled,}: BillInstanceCardProps) {
   const [loading, setLoading] = useState(false);
   const togglePaidStatus = useMutation(
     api.billInstances.toggleBillInstancePaidStatus,
@@ -129,12 +130,21 @@ export function BillInstanceCard({ billInstance }: BillInstanceCardProps) {
             <NotebookTabs className="h-5 w-5 text-muted-foreground" />
             <span>{formatCurrencyUSD(billInstance.amount)}</span>
           </CardTitle>
-          <Badge className={getBadgeStyles()} variant={"outline"}>
-            <div className="flex items-center space-x-1">
-              {getStatusIcon()}
-              <span>{getBadgeText()}</span>
-            </div>
-          </Badge>
+
+          <div className="flex flex-col items-end gap-1">
+            <Badge className={getBadgeStyles()} variant="outline">
+              <div className="flex items-center space-x-1">
+                {getStatusIcon()}
+                <span>{getBadgeText()}</span>
+              </div>
+            </Badge>
+
+            {autoPayEnabled && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
+                Auto pay
+              </span>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>

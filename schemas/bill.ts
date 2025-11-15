@@ -9,4 +9,6 @@ export const billSchema = z.object({
     .or(z.literal("")),
   username: z.string().optional(),
   password: z.string().optional(),
+  autoPayEnabled: z.optional(z.boolean()),
+  autoPayNote: z.optional(z.string()),
 });

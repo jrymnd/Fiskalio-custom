@@ -5,6 +5,8 @@ export const createBillForProfile = mutation({
   args: {
     profileId: v.id("profiles"),
     name: v.string(),
+    autoPayEnabled: v.optional(v.boolean()),
+    autoPayNote: v.optional(v.string()),
     eBill: v.optional(
       v.object({
         link: v.string(),
@@ -26,6 +28,9 @@ export const createBillForProfile = mutation({
       eBill: args.eBill,
       userId: identity.tokenIdentifier,
       billInstanceCount: 0, // Will be computed dynamically in queries
+
+      autoPayEnabled: args.autoPayEnabled ?? false,
+      autoPayNote: args.autoPayNote,
     };
 
     const billId = await ctx.db.insert("bills", bill);
@@ -151,6 +156,8 @@ export const updateBill = mutation({
         password: v.string(),
       }),
     ),
+    autoPayEnabled: v.optional(v.boolean()),
+    autoPayNote: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -172,12 +179,21 @@ export const updateBill = mutation({
     const updates: {
       name?: string;
       eBill?: { link: string; username: string; password: string };
+      autoPayEnabled?: boolean;
+      autoPayNote?: string;
     } = {};
+
     if (args.name !== undefined) {
       updates.name = args.name;
     }
     if (args.eBill !== undefined) {
       updates.eBill = args.eBill;
+    }
+    if (args.autoPayEnabled !== undefined) {
+      updates.autoPayEnabled = args.autoPayEnabled;
+    }
+    if (args.autoPayNote !== undefined) {
+      updates.autoPayNote = args.autoPayNote;
     }
 
     await ctx.db.patch(args.id, updates);
