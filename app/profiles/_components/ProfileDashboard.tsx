@@ -15,7 +15,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { formatCurrencyUSD } from "@/lib/currency";
-import { cn } from "@/lib/utils";
+
 
 interface ProfileDashboardProps {
   profileId: Id<"profiles">;
